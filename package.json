@@ -1,5 +1,5 @@
 {
-  "name": "netlify-functions-example",
+  "name": "netlify-functions-proxy",
   "version": "0.1.0",
   "description": "Irene’s playground for learning how to use Netlify Lambda Functions",
   "private": true,
@@ -31,6 +31,7 @@
     "webpack-dev-server": "^3.1.3"
   },
   "dependencies": {
+    "lodash": "^4.17.11",
     "normalize.css": "^8.0.0"
   }
 }
