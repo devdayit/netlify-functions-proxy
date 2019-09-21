@@ -1,22 +1,22 @@
-const { SIG_ID, SIGS, GROUP_IDS } = process.env;
+const { GROUP_IDS, ACCESS_TOKEN } = process.env;
 
 import fetch from "node-fetch";
 
 import flatten from "lodash/flatten";
 
-const getEvents = ({ groupId, signatureKey }) => {
-  const endpoint = `https://api.meetup.com/${groupId}/events?photo-host=public&page=20&sig_id=${SIG_ID}&sig=${signatureKey}`;
-  return fetch(endpoint).then(response => response.json());
+const getEvents = ({ groupId }) => {
+  const endpoint = `https://api.meetup.com/${groupId}/events?photo-host=public&page=20`;
+  return fetch(endpoint, {
+    headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
+  }).then(response => response.json());
 };
 
 exports.handler = async (event, context) => {
-  const signatures = SIGS.split(",");
   const groupIds = GROUP_IDS.split(",");
 
-  const promises = signatures.map((signature, i) =>
+  const promises = groupIds.map(groupId =>
     getEvents({
-      groupId: groupIds[i],
-      signatureKey: signature
+      groupId: groupId
     })
   );
 
@@ -24,7 +24,8 @@ exports.handler = async (event, context) => {
     .then(data => ({
       headers: {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept"
+        "Access-Control-Allow-Headers":
+          "Origin, X-Requested-With, Content-Type, Accept"
       },
       statusCode: 200,
       body: JSON.stringify(flatten(data))
